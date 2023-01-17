@@ -36,6 +36,18 @@ export const App: React.FC = () => {
   const allUsersButton = 'All';
   const [visibleItems, setVisibleItems] = useState(itemList);
   const [activeUser, setActiveUser] = useState(allUsersButton);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(() => event.target.value);
+  };
+
+  const filteredItems = visibleItems.filter(({ product }) => {
+    const query = searchQuery.toLowerCase().trim();
+    const productName = product.name.toLowerCase();
+
+    return productName.includes(query);
+  });
 
   return (
     <div className="section">
@@ -87,21 +99,25 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={searchQuery}
+                  onChange={(event) => handleSearchQuery(event)}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {searchQuery && (
+                  <span className="icon is-right">
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => setSearchQuery('')}
+                    />
+                  </span>
+                )}
               </p>
             </div>
 
@@ -206,7 +222,7 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {visibleItems.map(({
+              {filteredItems.map(({
                 product,
                 category,
                 user,
