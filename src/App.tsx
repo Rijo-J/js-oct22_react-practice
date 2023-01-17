@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 
 import cn from 'classnames';
@@ -33,6 +33,10 @@ export const itemList = productsFromServer
   });
 
 export const App: React.FC = () => {
+  const allUsersButton = 'All';
+  const [visibleItems, setVisibleItems] = useState(itemList);
+  const [activeUser, setActiveUser] = useState(allUsersButton);
+
   return (
     <div className="section">
       <div className="container">
@@ -46,8 +50,13 @@ export const App: React.FC = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                className={cn({ 'is-active': activeUser === allUsersButton })}
+                onClick={() => {
+                  setActiveUser(allUsersButton);
+                  setVisibleItems(itemList);
+                }}
               >
-                All
+                {allUsersButton}
               </a>
 
               {usersFromServer.map(({
@@ -58,6 +67,12 @@ export const App: React.FC = () => {
                   data-cy="FilterUser"
                   href="#/"
                   key={id}
+                  className={cn({ 'is-active': activeUser === name })}
+                  onClick={() => {
+                    setActiveUser(name);
+                    setVisibleItems([...itemList
+                      .filter(item => item.user?.name === name)]);
+                  }}
                 >
                   {name}
                 </a>
@@ -191,7 +206,7 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {itemList.map(({
+              {visibleItems.map(({
                 product,
                 category,
                 user,
